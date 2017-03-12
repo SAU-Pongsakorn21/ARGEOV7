@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">ARGEOV7</string>
+    <string name="detail_txt_title">ชื่อสถานที่</string>
+    <string name="detail_txt_show">ระยะทาง</string>
+    <string name="add_txt_title1">ชื่อสถานที่</string>
+    <string name="rgt_txt_username">Username</string>
+    <string name="rgt_txt_password">Password</string>
+    <string name="rgt_txt_email">E-mail</string>
+    <string name="rgt_hint_username">Enter username</string>
+    <string name="rgt_hint_password">Enter password</string>
+    <string name="rgt_hint_email">Enter e-mail</string>
+    <string name="rgt_btn_register">Register User</string>
+    <string name="rgt_txt_01">Already Registered?\nClick Here to Login</string>
+</resources>

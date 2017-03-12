@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="@dimen/activity_vertical_margin"
+    android:layout_marginLeft="@dimen/activity_vertical_margin"
+    android:layout_marginRight="@dimen/activity_vertical_margin"
+    android:layout_marginTop="@dimen/activity_vertical_margin"
+    tools:context="sau.comsci.com.argeov7.Register_Activity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/rgt_txt_username" />
+
+            <EditText
+                android:id="@+id/rgt_edt_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/rgt_hint_username" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/rgt_txt_password" />
+
+            <EditText
+                android:id="@+id/rgt_edt_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/rgt_hint_password" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/rgt_txt_username" />
+
+            <EditText
+                android:id="@+id/rgt_edt_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/rgt_hint_email" />
+
+            <Button
+                android:id="@+id/rgt_btn_register"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/rgt_btn_register" />
+
+            <TextView
+                android:id="@+id/rgt_txt_login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/rgt_txt_01"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>
