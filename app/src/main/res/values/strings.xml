@@ -11,4 +11,11 @@
     <string name="rgt_hint_email">Enter e-mail</string>
     <string name="rgt_btn_register">Register User</string>
     <string name="rgt_txt_01">Already Registered?\nClick Here to Login</string>
+    <string name="add_txt_place_name">ชื่อสถานที่</string>
+    <string name="add_txt_place_detail">รายละเอียด</string>
+    <string name="add_txt_latitude">Latitude : </string>
+    <string name="add_txt_longitude">Longitude : </string>
+    <string name="add_txt_username">ชื่อผู้ใช้ : </string>
+    <string name="add_btn_add">Add Location</string>
+    <string name="add_btn_cancel">Cancel</string>
 </resources>

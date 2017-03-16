@@ -40,6 +40,7 @@ import java.util.List;
 import sau.comsci.com.argeov7.AddLocationActivity;
 import sau.comsci.com.argeov7.MainActivity;
 import sau.comsci.com.argeov7.R;
+import sau.comsci.com.argeov7.Register_Activity;
 
 @SuppressWarnings("deprecation")
 public class ARView extends AppCompatActivity implements OnLocationChangedListener, SensorEventListener, View.OnClickListener {
@@ -283,6 +284,13 @@ public class ARView extends AppCompatActivity implements OnLocationChangedListen
                 else if(item.getItemId() == R.id.menu_add)
                 {
                     Intent intent = new Intent(ARView.this,AddLocationActivity.class);
+                    intent.putExtra("Latitude",mMyLatitude);
+                    intent.putExtra("Longitude",mMyLongitude);
+                    startActivity(intent);
+                }
+                else if(item.getItemId() == R.id.menu_register)
+                {
+                    Intent intent = new Intent(ARView.this,Register_Activity.class);
                     startActivity(intent);
                 }
                 return true;

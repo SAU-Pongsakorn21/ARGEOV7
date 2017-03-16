@@ -51,7 +51,7 @@ public class DataView implements View.OnClickListener {
     Location currentLocation = new Location("provider");
 
 
-    String[] places = new String[]{"ณัฐกานตฺ์", "บริษัท พรีเมียร์ เพลทติ้ง แอนด์ คอม", "มอเอเชีย", "วัดท่าไม้","ธนาคารธนชาติ","western Union","ณัฐกานต์2"};
+    String[] places = new String[]{"ณัฐกานตฺ์", "บริษัท พรีเมียร์ เพลทติ้ง แอนด์ คอม", "มอเอเชีย", "วัดท่าไม้","ธนาคารธนชาติ","western Union","ณัฐกานต์2","my place"};
 
     boolean isInit = false;
     boolean isDrawing = true;
@@ -102,45 +102,40 @@ public class DataView implements View.OnClickListener {
 
 
         for (int i = 0; i < lp.latitudes.length; i++) {
-            layoutParamses[i] = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT);
-            subjectTextViewParams[i] = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-
             subjectImageView[i] = new ImageView(_context);
             locationMarkerView[i] = new RelativeLayout(_context);
             locationTextView[i] = new TextView(_context);
+
+            layoutParamses[i] = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT);
+            subjectTextViewParams[i] = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            subjectImageViewParams[i] = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+
             locationTextView[i].setText(checkTextToDisplay(places[i]));
             locationTextView[i].setTextColor(Color.WHITE);
             locationTextView[i].setSingleLine();
             subjectImageView[i].setBackgroundResource(R.drawable.icon);
 
-            subjectImageView[i].setId(lp.idMarker[i]);
-            locationTextView[i].setId(lp.idMarker[i]);
-
+            subjectImageView[i].setId(R.id.ImageViewID);
+            locationTextView[i].setId(R.id.TextViewID);
 
             locationMarkerView[i] = new RelativeLayout(_context);
-
             locationMarkerView[i].setBackgroundResource(R.color.colorAccent);
 
-            subjectImageViewParams[i] = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-            subjectImageViewParams[i].topMargin = 15;
-            subjectImageViewParams[i].bottomMargin = 15;
-            subjectImageViewParams[i].addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            subjectImageViewParams[i].addRule(RelativeLayout.CENTER_HORIZONTAL);
             layoutParamses[i].setMargins(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2, 0, 0);
 
-            subjectTextViewParams[i].addRule(RelativeLayout.BELOW,subjectImageView[i].getId());
-            subjectTextViewParams[i].topMargin = 120;
-            subjectTextViewParams[i].addRule(RelativeLayout.CENTER_HORIZONTAL);
+            subjectImageViewParams[i].addRule(RelativeLayout.ALIGN_PARENT_LEFT,RelativeLayout.TRUE);
+            subjectImageViewParams[i].addRule(RelativeLayout.ALIGN_PARENT_TOP,RelativeLayout.TRUE);
+            subjectTextViewParams[i].addRule(RelativeLayout.RIGHT_OF,subjectImageView[i].getId());
+            subjectTextViewParams[i].addRule(RelativeLayout.ALIGN_BASELINE,subjectImageView[i].getId());
 
             locationMarkerView[i].setLayoutParams(layoutParamses[i]);
-            subjectImageView[i].setLayoutParams(subjectImageViewParams[i]);
-            locationTextView[i].setLayoutParams(subjectTextViewParams[i]);
+            locationMarkerView[i].addView(subjectImageView[i],subjectImageViewParams[i]);
+            locationMarkerView[i].addView(locationTextView[i],subjectTextViewParams[i]);
 
-            locationMarkerView[i].addView(subjectImageView[i]);
-            locationMarkerView[i].addView(locationTextView[i]);
             rel.addView(locationMarkerView[i]);
             locationMarkerView[i].setId(lp.idMarker[i]);
             locationMarkerView[i].setOnClickListener(this);
+
         }
 
         this.displayMetrics = displayMetrics;
@@ -224,13 +219,15 @@ public class DataView implements View.OnClickListener {
                             mark_position = lp.position[count];
                         }
                     }
-                    layoutParamses[count].setMargins((int) (x - width / 2 + lp.position[count]), (int) (y - height / 2 - 10 - addY), 0, 0);
-                    layoutParamses[count].height = 150;
-                    layoutParamses[count].width = 200;
+                    //layoutParamses[count].setMargins((int) (x - width / 2 + lp.position[count]), (int) (y - height / 2 - 10 - addY), 0, 0);
+                    layoutParamses[count].setMargins((int) (this.yaw+x), (int) (y-height / 2 - 10 - addY),0, 0);
+                    layoutParamses[count].height = RelativeLayout.LayoutParams.WRAP_CONTENT;
+                    layoutParamses[count].width = 300;
+                    subjectTextViewParams[count].addRule(RelativeLayout.CENTER_IN_PARENT);
                     locationMarkerView[count].setLayoutParams(layoutParamses[count]);
                     locationMarkerView[count].setVisibility(View.VISIBLE);
                     addY = 0;
-                    Log.d("lp",String.valueOf(this.yaw)+" "+String.valueOf(x));
+                    Log.d("lp",(this.yaw+x)+" "+places[count]);
                 } else {
                     locationMarkerView[count].setVisibility(View.GONE);
                 }
@@ -274,7 +271,6 @@ public class DataView implements View.OnClickListener {
                 lp.coordinateArray[i][1] = (int) yPosition;
             } else {
                 angleToShitf = (float) lp.bearings[i] - this.yaw;
-
                 if (this.pitch != 90) {
                     yPosition = (this.pitch - 90) * this.degreetopixelHeight + 200;
                 } else {
@@ -287,7 +283,8 @@ public class DataView implements View.OnClickListener {
                     radarText(dw, places[i], (nextXofText[i]), yPosition, true, true, i);
                     lp.coordinateArray[i][0] = (int) ((displayMetrics.widthPixels / 2) + (angleToShitf * degreetopixelWidth));
                     lp.coordinateArray[i][1] = (int) yPosition;
-                    isDrawing = true;
+                    lp.position[i] = this.yaw +lp.coordinateArray[i][0];
+                            isDrawing = true;
                 } else {
                     radarText(dw, places[i], lp.coordinateArray[i][0], yPosition, true, true, i);
                     isDrawing = false;

@@ -6,4 +6,7 @@
     <item
         android:id="@+id/menu_add"
         android:title="Add Location"/>
+    <item
+        android:id="@+id/menu_register"
+        android:title="Register User"/>
 </menu>
