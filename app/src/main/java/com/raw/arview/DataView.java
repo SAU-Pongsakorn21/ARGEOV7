@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -37,21 +36,20 @@ public class DataView implements View.OnClickListener {
     RelativeLayout.LayoutParams[] subjectImageViewParams;
     RelativeLayout.LayoutParams[] subjectTextViewParams;
     TextView[] locationTextView;
-
     LocationPlace lp = new LocationPlace();
-
+    ARView arView;
     int[] nextXofText;
 
     ArrayList<Integer> nextYofText = new ArrayList<Integer>();
 
-    double[] bearings;
+    //double[] bearings;
     float angleToShitf;
     float yPosition;
     boolean isClick = true;
     Location currentLocation = new Location("provider");
 
 
-    String[] places = new String[]{"ณัฐกานตฺ์", "บริษัท พรีเมียร์ เพลทติ้ง แอนด์ คอม", "มอเอเชีย", "วัดท่าไม้","ธนาคารธนชาติ","western Union","ณัฐกานต์2","my place"};
+    String[] places = new String[]{"ณัฐกานตฺ์", "บริษัท พรีเมียร์ เพลทติ้ง แอนด์ คอม", "มอเอเชีย", "วัดท่าไม้", "ธนาคารธนชาติ", "western Union", "ณัฐกานต์2", "my place"};
 
     boolean isInit = false;
     boolean isDrawing = true;
@@ -83,6 +81,7 @@ public class DataView implements View.OnClickListener {
 
     public double lat, lon;
 
+
     public DataView(Context ctx) {
         this._context = ctx;
     }
@@ -92,6 +91,7 @@ public class DataView implements View.OnClickListener {
     }
 
     public void init(int widthInit, int heightInit, android.hardware.Camera camera, DisplayMetrics displayMetrics, RelativeLayout rel) {
+
         locationMarkerView = new RelativeLayout[lp.latitudes.length];
         layoutParamses = new RelativeLayout.LayoutParams[lp.latitudes.length];
         subjectImageViewParams = new RelativeLayout.LayoutParams[lp.latitudes.length];
@@ -119,7 +119,7 @@ public class DataView implements View.OnClickListener {
             locationTextView[i].setId(R.id.TextViewID);
 
             locationMarkerView[i] = new RelativeLayout(_context);
-            locationMarkerView[i].setBackgroundResource(R.color.colorAccent);
+            locationMarkerView[i].setBackgroundResource(R.drawable.shape_marker);
 
             layoutParamses[i].setMargins(displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2, 0, 0);
 
@@ -163,9 +163,8 @@ public class DataView implements View.OnClickListener {
         this.yaw = yaw;
         this.pitch = pitch;
         this.roll = roll;
-
-
         String dirText = "";
+
         int bearing = (int) this.yaw;
         int range = (int) (this.yaw / (360f / 16f));
 
@@ -199,7 +198,7 @@ public class DataView implements View.OnClickListener {
         currentLocation.setLatitude(getLat());
         currentLocation.setLongitude(getLon());
         for (int i = 0; i < lp.latitudes.length; i++) {
-            lp.distance[i] = calDistance(currentLocation.getLatitude(), currentLocation.getLongitude(), lp.latitudes[i], lp.longitudes[i]) * 1000;
+            lp.distance[i] = calDistance(currentLocation.getLatitude(), currentLocation.getLongitude(), lp.latitudes[i], lp.longitudes[i])*1000;
         }
         if (isLocationBlock) {
             height = dw.getTextAsc() + dw.getTextDesc() + padh * 2 + 10;
@@ -209,25 +208,23 @@ public class DataView implements View.OnClickListener {
         if (bg) {
             if (isLocationBlock) {
                 if (lp.distance[count] < 500) {
-                    if (mark_position == lp.position[count])
-                    {
+                    if (mark_position == lp.position[count]) {
                         addY = 200;
                     } else {
                         addY = 0;
-                        if(lp.distance[count]<500)
-                        {
+                        if (lp.distance[count] < 500) {
                             mark_position = lp.position[count];
                         }
                     }
                     //layoutParamses[count].setMargins((int) (x - width / 2 + lp.position[count]), (int) (y - height / 2 - 10 - addY), 0, 0);
-                    layoutParamses[count].setMargins((int) (this.yaw+x), (int) (y-height / 2 - 10 - addY),0, 0);
+                    layoutParamses[count].setMargins((int) (this.yaw + x), (int) (y - height / 2 - 10 - addY), 0, 0);
                     layoutParamses[count].height = RelativeLayout.LayoutParams.WRAP_CONTENT;
                     layoutParamses[count].width = 300;
                     subjectTextViewParams[count].addRule(RelativeLayout.CENTER_IN_PARENT);
                     locationMarkerView[count].setLayoutParams(layoutParamses[count]);
                     locationMarkerView[count].setVisibility(View.VISIBLE);
                     addY = 0;
-                    Log.d("lp",(this.yaw+x)+" "+places[count]);
+                    Log.d("Sss",String.valueOf(places[count]));
                 } else {
                     locationMarkerView[count].setVisibility(View.GONE);
                 }
@@ -252,8 +249,7 @@ public class DataView implements View.OnClickListener {
 
 
     void drawTextBlock(PaintUtils dw) {
-        for (int i = 0; i < lp.bearings.length; i++) {
-
+        for (int i = 0; i < lp.latitudes.length; i++) {
             if (lp.bearings[i] < 0) {
                 if (this.pitch != 90) {
                     yPosition = (this.pitch - 90) * this.degreetopixelHeight + 200;
@@ -283,8 +279,8 @@ public class DataView implements View.OnClickListener {
                     radarText(dw, places[i], (nextXofText[i]), yPosition, true, true, i);
                     lp.coordinateArray[i][0] = (int) ((displayMetrics.widthPixels / 2) + (angleToShitf * degreetopixelWidth));
                     lp.coordinateArray[i][1] = (int) yPosition;
-                    lp.position[i] = this.yaw +lp.coordinateArray[i][0];
-                            isDrawing = true;
+                    lp.position[i] = this.yaw + lp.coordinateArray[i][0];
+                    isDrawing = true;
                 } else {
                     radarText(dw, places[i], lp.coordinateArray[i][0], yPosition, true, true, i);
                     isDrawing = false;
@@ -323,40 +319,39 @@ public class DataView implements View.OnClickListener {
     }
 
     @Override
-    public void onClick(View v)
-    {
+    public void onClick(View v) {
         isClick = !isClick;
 
-        locationMarkerView[v.getId()].setBackgroundResource(isClick ? R.color.colorAccent: R.color.colorPrimary);
+        locationMarkerView[v.getId()].setBackgroundResource(isClick ? R.drawable.shape_marker : R.drawable.shape_marker_click);
 
         //Toast.makeText(_context,"สถานที่ : "+places[v.getId()]+"\n ระยะทาง : "+lp.distance[v.getId()]+" เมตร",Toast.LENGTH_SHORT).show();
         final Dialog dialog = new Dialog(_context);
         Window window = dialog.getWindow();
         window.setGravity(Gravity.BOTTOM);
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT,WindowManager.LayoutParams.WRAP_CONTENT);
 
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         dialog.setContentView(R.layout.detail_location);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         TextView txt_title = (TextView) dialog.findViewById(R.id.dtl_txt_title);
         txt_title.setText(places[v.getId()]);
         TextView txt_detail = (TextView) dialog.findViewById(R.id.dtl_txt_show);
-        txt_detail.setText("ระยะทาง : "+lp.distance[v.getId()]);
-        Button  btnClose = (Button) dialog.findViewById(R.id.dtl_btn_close);
+        txt_detail.setText("ระยะทาง : " + lp.distance[v.getId()]);
+        Button btnClose = (Button) dialog.findViewById(R.id.dtl_btn_close);
         dialog.setCancelable(false);
         keepView = v.getId();
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                locationMarkerView[keepView].setBackgroundResource(R.color.colorAccent);
+                locationMarkerView[keepView].setBackgroundResource(R.drawable.shape_marker);
                 isClick = true;
             }
         });
         dialog.show();
     }
 
-    public void calBearings(Location curent,double mMyLatitude,double mMyLongitude)
-    {
+    public void calBearings(Location curent, double mMyLatitude, double mMyLongitude) {
         curent.setLatitude(mMyLatitude);
         curent.setLongitude(mMyLongitude);
         Location distance = new Location("distance");

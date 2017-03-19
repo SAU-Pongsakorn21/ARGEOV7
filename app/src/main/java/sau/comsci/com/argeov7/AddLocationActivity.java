@@ -12,11 +12,9 @@ import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.raw.utils.LocationPlace;
 
 import org.json.JSONException;
@@ -26,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import sau.comsci.com.argeov7.utils.Constants;
+import sau.comsci.com.argeov7.utils.RequestHandler;
 
 public class AddLocationActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText edt_place_name, edt_place_detail;
@@ -107,8 +106,7 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
             }
         };
 
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
+        RequestHandler.getInstance(this).addToRequestQueue(stringRequest);
     }
 
     @Override

@@ -10,11 +10,9 @@ import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import sau.comsci.com.argeov7.utils.Constants;
+import sau.comsci.com.argeov7.utils.RequestHandler;
 
 public class Register_Activity extends AppCompatActivity implements View.OnClickListener {
     private EditText edt_username, edt_password, edt_email;
@@ -81,8 +80,7 @@ public class Register_Activity extends AppCompatActivity implements View.OnClick
             }
         };
 
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
+        RequestHandler.getInstance(this).addToRequestQueue(stringRequest);
     }
 
     @Override

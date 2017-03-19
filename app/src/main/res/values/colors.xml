@@ -7,4 +7,7 @@
     <color name="colorIndigo">#3F51B5</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorBlack">#000000</color>
+    <color name="colorDeepPurple">#673AB7</color>
+    <color name="colorDeepPurple200">#B39DDB</color>
+    <color name="colorGrey100">#F5F5F5</color>
 </resources>

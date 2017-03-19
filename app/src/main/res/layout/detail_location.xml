@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="450dp"
+    android:layout_width="560dp"
     android:layout_height="170dp"
-    android:background="@color/colorIndigo100">
+    android:background="@color/colorGrey100">
     <ImageView
         android:id="@+id/dtl_img_place"
         android:layout_width="@dimen/detail_image_48dp"
@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/detail_txt_title"
-            android:textColor="@color/colorWhite"
+            android:textColor="@color/colorBlack"
             android:textSize="@dimen/detail_text_size_18sp"
             android:textStyle="bold"/>
         <TextView
@@ -30,7 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/detail_txt_show"
-            android:textColor="@color/colorWhite"
+            android:textColor="@color/colorBlack"
             android:textSize="@dimen/detail_text_size_18sp"
             android:textStyle="bold"/>
     </LinearLayout>
