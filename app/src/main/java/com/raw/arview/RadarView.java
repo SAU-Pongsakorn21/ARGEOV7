@@ -1,6 +1,7 @@
 package com.raw.arview;
 
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Location;
 
@@ -51,18 +52,20 @@ public class RadarView {
         mscale = range / arView.converToPix((int) RADIUS);
     }
 
-    public void paint(PaintUtils dw, float yaw) {
+    public void paint(PaintUtils dw, float yaw, SharedPreferences sharedPreferences) {
         this.yaw = yaw;
-
+        int count = Integer.parseInt(sharedPreferences.getString("result",""));
+        double[] latitude = view.subString(sharedPreferences.getString("myLat",""));
+        double[] longitude = view.subString(sharedPreferences.getString("myLong",""));
         dw.setFill(true);
         dw.setColor(radarColor);
         dw.paintCircle(origenX + RADIUS, origentY + RADIUS, RADIUS);
 
         currentLocation.setLatitude(view.getLat());
         currentLocation.setLongitude(view.getLon());
-        for (int i = 0; i < lp.latitudes.length; i++) {
-            destinedLocation.setLatitude(lp.latitudes[i]);
-            destinedLocation.setLongitude(lp.longitudes[i]);
+        for (int i = 0; i <count; i++) {
+            destinedLocation.setLatitude(latitude[i]);
+            destinedLocation.setLongitude(longitude[i]);
             convLocToVec(currentLocation, destinedLocation);
             float x = this.x / mscale;
             float y = this.z / mscale;

@@ -1,5 +1,6 @@
 package com.raw.utils;
 
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -99,14 +100,14 @@ public class PaintUtils
         canvas.drawText(text , x, y, paint);
     }
 
-    public void paintObj(RadarView obj, float x, float y, float rotation, float scale, float yaw)
+    public void paintObj(RadarView obj, float x, float y, float rotation, float scale, float yaw, SharedPreferences sharedPreferences)
     {
         canvas.save();
         canvas.translate(x+obj.getWidth()/2, y+obj.getHeight()/2);
         canvas.rotate(rotation);
         canvas.scale(scale,scale);
         canvas.translate(-(obj.getHeight()/2),-(obj.getHeight()/2));
-        obj.paint(this,yaw);
+        obj.paint(this,yaw,sharedPreferences);
         canvas.restore();
     }
 

@@ -60,6 +60,7 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
 
         btn_add_location.setOnClickListener(this);
         btn_cancel.setOnClickListener(this);
+
     }
 
     private void addLocation() {

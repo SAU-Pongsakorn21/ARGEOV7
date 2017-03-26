@@ -2,6 +2,7 @@ package com.raw.arview;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.hardware.Camera;
@@ -26,12 +27,23 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.google.gson.Gson;
 import com.raw.utils.Compatibility;
 import com.raw.utils.MyCurrentLocation;
 import com.raw.utils.OnLocationChangedListener;
 import com.raw.utils.PaintUtils;
+import com.raw.utils.VolleyCallback;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -40,6 +52,8 @@ import sau.comsci.com.argeov7.AddLocationActivity;
 import sau.comsci.com.argeov7.MainActivity;
 import sau.comsci.com.argeov7.R;
 import sau.comsci.com.argeov7.Register_Activity;
+import sau.comsci.com.argeov7.utils.Constants;
+import sau.comsci.com.argeov7.utils.RequestHandler;
 
 @SuppressWarnings("deprecation")
 public class ARView extends AppCompatActivity implements OnLocationChangedListener, SensorEventListener, View.OnClickListener {
@@ -80,21 +94,29 @@ public class ARView extends AppCompatActivity implements OnLocationChangedListen
     protected float[] magSensorVals;
     Button btnAdd;
 
+    String place_id,place_name,place_detail,user_username;
+    public double place_latitude,place_longitude;
+    public int count = 0;
+    public List<String> namePlace,id_place;
+    public List<Double> myLat,myLong,L_bearing;
+    public SharedPreferences sharedPreferences;
+    public Gson gson = new Gson();
+
+    public double[] bearings;
+    int count_if = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sharedPreferences = getPreferences(MODE_PRIVATE);
         setUpListeners();
-
         final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         this.mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, " ");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-
         screenHeight = displayMetrics.heightPixels;
         screenWidth = displayMetrics.widthPixels;
-
 
         upperLayerLayout = new RelativeLayout(this);
         RelativeLayout.LayoutParams upperLayerLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
@@ -123,6 +145,8 @@ public class ARView extends AppCompatActivity implements OnLocationChangedListen
             isInited = true;
         }
         btnAdd.setOnClickListener(this);
+
+        L_bearing = new ArrayList<Double>();
     }
 
     public static Context getContext() {
@@ -141,17 +165,88 @@ public class ARView extends AppCompatActivity implements OnLocationChangedListen
 
         dataView.setLat(mMyLatitude);
         dataView.setLon(mMyLongitude);
-        dataView.calBearings(location, mMyLatitude, mMyLongitude);
+        bearings = dataView.calBearings(location, mMyLatitude, mMyLongitude,sharedPreferences);
+
+
+        if(count_if == 0)
+        {
+            count_if = 1;
+            for(int i=0;i<bearings.length;i++)
+            {
+                L_bearing.add(i,bearings[i]);
+            }
+
+        }
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("bearing",gson.toJson(L_bearing.toString()));
+        editor.commit();
+    }
+
+
+
+    public void getString(final VolleyCallback callback)
+    {
+        myLat = new ArrayList<Double>();
+        myLong = new ArrayList<Double>();
+        namePlace = new ArrayList<String>();
+        id_place = new ArrayList<String>();
+        JsonArrayRequest jsRequest = new JsonArrayRequest(Constants.URL_LOAD_LOCATION,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        JSONObject jsObj;
+                        try {
+                            for (int i = 0; i < response.length(); i++) {
+                                jsObj = response.getJSONObject(i);
+                                place_id = jsObj.getString("place_id");
+                                place_name = jsObj.getString("place_name");
+                                place_detail = jsObj.getString("place_detail");
+                                place_latitude = jsObj.getDouble("place_latitude");
+                                place_longitude = jsObj.getDouble("place_longitude");
+                                user_username = jsObj.getString("user_username");
+                                myLat.add(place_latitude);
+                                myLong.add(place_longitude);
+                                namePlace.add(place_name);
+                                id_place.add(place_id);
+                            }
+                            count = myLat.size();
+                            callback.onSuccessResponse(String.valueOf(count),myLat,myLong,namePlace,id_place);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        finally {
+
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(),error.getMessage(),Toast.LENGTH_LONG).show();
+
+            }
+        });
+        RequestHandler.getInstance(getApplicationContext()).addToRequestQueue(jsRequest);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        getString(new VolleyCallback() {
+            @Override
+            public void onSuccessResponse(String result ,List<Double> Lat, List<Double> Long,List<String> namePlace,List<String> id_place) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("myLat",gson.toJson(Lat).toString());
+                editor.putString("myLong",gson.toJson(Long).toString());
+                editor.putString("id_place",gson.toJson(id_place).toString());
+                editor.putString("name_place",gson.toJson(namePlace).toString());
+                editor.putString("result",result);
+                editor.commit();
+            }
+        });
         myCurrentLocation.start();
         this.mWakeLock.acquire();
-
         sensorMgr = (SensorManager) getSystemService(SENSOR_SERVICE);
-
         sensors = sensorMgr.getSensorList(Sensor.TYPE_ACCELEROMETER);
         if (sensors.size() > 0) {
             sensorGrav = sensors.get(0);
@@ -228,10 +323,12 @@ public class ARView extends AppCompatActivity implements OnLocationChangedListen
     }
 
     public void setUpListeners() {
+
         myCurrentLocation = new MyCurrentLocation(this);
         myCurrentLocation.buildGoogleApiClient(this);
         myCurrentLocation.start();
     }
+
 
     protected float[] lowPass(float[] input, float[] output) {
         if (output == null)
@@ -241,6 +338,7 @@ public class ARView extends AppCompatActivity implements OnLocationChangedListen
         }
         return output;
     }
+
 
     @Override
     public void onClick(View view) {
@@ -266,7 +364,6 @@ public class ARView extends AppCompatActivity implements OnLocationChangedListen
         });
         popupMenu.show();
     }
-
 
 }
 
@@ -379,11 +476,9 @@ class RadarMarkerView extends View {
     ARView arView;
     DisplayMetrics displayMetrics;
     RelativeLayout upperLayoutView = null;
-
-
-    public RadarMarkerView(Context context, DisplayMetrics displayMetrics, RelativeLayout rel) {
+    int count = 0;
+    public RadarMarkerView(final Context context, DisplayMetrics displayMetrics, RelativeLayout rel) {
         super(context);
-
         arView = (ARView) context;
         this.displayMetrics = displayMetrics;
         upperLayoutView = rel;
@@ -395,10 +490,11 @@ class RadarMarkerView extends View {
         ARView.paintScreen.setWidth(canvas.getWidth());
         ARView.paintScreen.setHeight(canvas.getHeight());
         ARView.paintScreen.setCanvase(canvas);
+        count = Integer.parseInt(arView.sharedPreferences.getString("result",""));
         if (!ARView.dataView.isInited()) {
-            ARView.dataView.init(ARView.paintScreen.getWidth(), ARView.paintScreen.getHeight(), arView.camera, displayMetrics, upperLayoutView);
+            ARView.dataView.init(ARView.paintScreen.getWidth(), ARView.paintScreen.getHeight(), arView.camera, displayMetrics, upperLayoutView,arView.sharedPreferences);
         }
-        ARView.dataView.draw(ARView.paintScreen, ARView.azimuth, ARView.pitch, ARView.roll);
+        ARView.dataView.draw(ARView.paintScreen, ARView.azimuth, ARView.pitch, ARView.roll,count,arView.sharedPreferences);
     }
 }
 
