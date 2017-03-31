@@ -6,5 +6,14 @@
     <dimen name="view_margin_16dp">16dp</dimen>
     <dimen name="detail_text_size_18sp">18sp</dimen>
     <dimen name="zero_dimen">0dp</dimen>
-
+    <dimen name="cardview_margin">5dp</dimen>
+    <dimen name="number3DP">3dp</dimen>
+    <dimen name="cardview_radius">2dp</dimen>
+    <dimen name="cardview_image_height">160dp</dimen>
+    <dimen name="cardview_padding">10dp</dimen>
+    <dimen name="cardview_sizetext">15sp</dimen>
+    <dimen name="cardview_paddingBottom">5dp</dimen>
+    <dimen name="detail_backdrop_height">250dp</dimen>
+    <dimen name="detail_backdrop_text">30sp</dimen>
+    <dimen name="detail_backdrop_subtext">22sp</dimen>
 </resources>

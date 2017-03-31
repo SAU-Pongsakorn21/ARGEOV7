@@ -2,7 +2,10 @@ package sau.comsci.com.argeov7;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,7 +30,7 @@ public class Register_Activity extends AppCompatActivity implements View.OnClick
     private EditText edt_username, edt_password, edt_email;
     private Button btn_register;
     private ProgressDialog progressDialog;
-
+    Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +45,13 @@ public class Register_Activity extends AppCompatActivity implements View.OnClick
         progressDialog = new ProgressDialog(this);
 
         btn_register.setOnClickListener(this);
+
+
+        toolbar = (Toolbar) findViewById(R.id.register_toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     private void registerUser() {
@@ -87,6 +97,20 @@ public class Register_Activity extends AppCompatActivity implements View.OnClick
     public void onClick(View view) {
         if (view == btn_register) {
             registerUser();
+        }
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }

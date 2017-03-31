@@ -5,25 +5,46 @@
     android:layout_height="match_parent"
     tools:context="sau.comsci.com.argeov7.AddLocationActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_addLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/add_btn_add"
+                android:layout_marginRight="@dimen/view_margin_16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:src="@drawable/add" />
+        </RelativeLayout>
+    </android.support.v7.widget.Toolbar>
+
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar_addLocation"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginLeft="@dimen/activity_vertical_margin"
+        android:layout_marginRight="@dimen/activity_vertical_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_marginLeft="@dimen/view_margin_16dp"
-            android:layout_marginRight="@dimen/view_margin_16dp"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
             android:orientation="vertical">
 
             <TextView
+                style="@style/AddActivity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/add_txt_place_name"
-                style="@style/AddActivity"/>
+                android:text="@string/add_txt_place_name" />
 
             <EditText
                 android:id="@+id/add_edt_place_name"
@@ -32,10 +53,10 @@
                 android:inputType="text" />
 
             <TextView
+                style="@style/AddActivity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/add_txt_place_detail"
-                style="@style/AddActivity"/>
+                android:text="@string/add_txt_place_detail" />
 
             <EditText
                 android:id="@+id/add_edt_place_detail"
@@ -50,18 +71,18 @@
                 android:weightSum="2">
 
                 <TextView
+                    style="@style/AddActivity_child"
                     android:layout_width="@dimen/zero_dimen"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.60"
-                    android:text="@string/add_txt_latitude"
-                    style="@style/AddActivity_child"/>
+                    android:text="@string/add_txt_latitude" />
 
                 <TextView
                     android:id="@+id/add_txt_latitude"
+                    style="@style/AddActivity_child"
                     android:layout_width="@dimen/zero_dimen"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1.40"
-                    style="@style/AddActivity_child"/>
+                    android:layout_weight="1.40" />
             </LinearLayout>
 
             <LinearLayout
@@ -71,19 +92,20 @@
                 android:weightSum="2">
 
                 <TextView
+                    style="@style/AddActivity_child"
                     android:layout_width="@dimen/zero_dimen"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.70"
-                    android:text="@string/add_txt_longitude"
-                    style="@style/AddActivity_child"/>
+                    android:text="@string/add_txt_longitude" />
 
                 <TextView
                     android:id="@+id/add_txt_longitude"
+                    style="@style/AddActivity_child"
                     android:layout_width="@dimen/zero_dimen"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1.30"
-                    style="@style/AddActivity_child"/>
+                    android:layout_weight="1.30" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -91,37 +113,52 @@
                 android:weightSum="2">
 
                 <TextView
+                    style="@style/AddActivity_child"
                     android:layout_width="@dimen/zero_dimen"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.60"
-                    android:text="@string/add_txt_username"
-                    style="@style/AddActivity_child"/>
+                    android:text="@string/add_txt_username" />
 
                 <TextView
                     android:id="@+id/add_txt_username"
+                    style="@style/AddActivity_child"
                     android:layout_width="@dimen/zero_dimen"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1.40"
-                    style="@style/AddActivity_child"/>
+                    android:layout_weight="1.40" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="@dimen/view_margin_16dp"
-                android:weightSum="2">
+                android:orientation="horizontal">
+
                 <Button
-                    android:id="@+id/add_btn_add"
                     android:layout_width="@dimen/zero_dimen"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/add_btn_add"/>
+                    android:text="@string/add_txt_upload" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/view_margin_16dp"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <Button
+
+                    android:layout_width="@dimen/zero_dimen"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/add_btn_add" />
+
                 <Button
                     android:id="@+id/add_btn_cancel"
                     android:layout_width="@dimen/zero_dimen"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/add_btn_cancel"/>
+                    android:text="@string/add_btn_cancel" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

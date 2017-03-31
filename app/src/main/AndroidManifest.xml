@@ -17,19 +17,21 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity" />
-        <activity
-            android:name="com.raw.arview.ARView"
-            android:screenOrientation="landscape"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.raw.arview.ARView"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
         <activity android:name=".AddLocationActivity" />
-        <activity android:name=".Register_Activity"></activity>
+        <activity android:name=".Register_Activity" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".ShowExtraDetail"></activity>
     </application>
 
 </manifest>

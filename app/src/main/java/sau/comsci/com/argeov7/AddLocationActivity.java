@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,7 +16,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.raw.utils.LocationPlace;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,9 +32,10 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
     private Button btn_add_location, btn_cancel;
     private ProgressDialog progressDialog;
 
-    public LocationPlace lp;
+    boolean checkimage = true;
     public double place_latitude;
     public double place_longitude;
+    ImageView imgAdd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,15 +52,17 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
         txt_longitude = (TextView) findViewById(R.id.add_txt_longitude);
         txt_username = (TextView) findViewById(R.id.add_txt_username);
 
-        btn_add_location = (Button) findViewById(R.id.add_btn_add);
+        //btn_add_location = (Button) findViewById(R.id.add_btn_add);
+        imgAdd = (ImageView) findViewById(R.id.add_btn_add);
         btn_cancel = (Button) findViewById(R.id.add_btn_cancel);
         txt_username.setText("admin");
         txt_latitude.setText(String.valueOf(place_latitude));
         txt_longitude.setText(String.valueOf(place_longitude));
         progressDialog = new ProgressDialog(this);
 
-        btn_add_location.setOnClickListener(this);
+        //btn_add_location.setOnClickListener(this);
         btn_cancel.setOnClickListener(this);
+        imgAdd.setOnClickListener(this);
 
     }
 
@@ -108,13 +111,18 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
         };
 
         RequestHandler.getInstance(this).addToRequestQueue(stringRequest);
+        //imgAdd.setBackgroundResource(R.drawable.add);
+        checkimage = true;
     }
 
     @Override
     public void onClick(View view)
     {
-        if(view == btn_add_location)
+        if(view == imgAdd)
         {
+            checkimage = false;
+            imgAdd.setBackgroundResource(R.drawable.add_click);
+
             addLocation();
         }
     }

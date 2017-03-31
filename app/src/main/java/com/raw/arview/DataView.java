@@ -1,12 +1,15 @@
 package com.raw.arview;
 
+
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Location;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -23,6 +26,7 @@ import com.raw.utils.RadarLine;
 import java.util.ArrayList;
 
 import sau.comsci.com.argeov7.R;
+import sau.comsci.com.argeov7.ShowExtraDetail;
 
 import static com.raw.arview.RadarView.RADIUS;
 
@@ -85,6 +89,7 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
     public String[] namePlace;
     public int c_count;
     double [] distance;
+    public float[] position;
     public DataView(Context ctx) {
         this._context = ctx;
     }
@@ -97,9 +102,10 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
     public void init(int widthInit, int heightInit, android.hardware.Camera camera, DisplayMetrics displayMetrics, final RelativeLayout rel,SharedPreferences sharedPreferences ) {
 
 
-        c_count = Integer.parseInt(sharedPreferences.getString("result",""));
-        String[] idPlace = subStringName(sharedPreferences.getString("id_place",""));
-        namePlace = subStringName(sharedPreferences.getString("name_place",""));
+
+        c_count = sharedPreferences.getInt("count",0);
+        String[] idPlace = subStringName(sharedPreferences.getString("A_id_place",""));
+        namePlace = subStringName(sharedPreferences.getString("A_placename",""));
         locationMarkerView = new RelativeLayout[c_count];
         layoutParamses = new RelativeLayout.LayoutParams[c_count];
         subjectImageViewParams = new RelativeLayout.LayoutParams[c_count];
@@ -107,12 +113,9 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
         subjectImageView = new ImageView[c_count];
         locationTextView = new TextView[c_count];
         nextXofText = new int[c_count];
-
-
-        bearings = subString(sharedPreferences.getString("bearing",""));
-
+        coordinateArray = new int[c_count][2];
+        position = new float[c_count];
         for (int i = 0; i < c_count; i++) {
-
             subjectImageView[i] = new ImageView(_context);
             locationMarkerView[i] = new RelativeLayout(_context);
             locationTextView[i] = new TextView(_context);
@@ -146,6 +149,7 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
             rel.addView(locationMarkerView[i]);
             locationMarkerView[i].setId(Integer.parseInt(idPlace[i])-1);
             locationMarkerView[i].setOnClickListener(this);
+
         }
 
         this.displayMetrics = displayMetrics;
@@ -195,23 +199,34 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
         dw.setColor(Color.rgb(255, 255, 255));
         dw.setFontSize(12);
 
-        radarText(dw, " " + bearing + ((char) 176) + " " + dirText, rx + RADIUS, ry - 5, true, false, -1,count,sharedPreferences);
-        drawTextBlock(dw,count,sharedPreferences);
+
+        if(getLat() != 0)
+        {
+            radarText(dw, " " + bearing + ((char) 176) + " " + dirText, rx + RADIUS, ry - 5, true, false, -1,count,sharedPreferences);
+            drawTextBlock(dw,count,sharedPreferences);
+        }
     }
 
     void radarText(PaintUtils dw, String txt, float x, float y, boolean bg, boolean isLocationBlock, int count,int count_marker,SharedPreferences sharedPreferences) {
         float padw = 4, padh = 2;
         float width = dw.getTextWidth(txt) + padw * 2;
         float height;
-        double [] latitude = subString(sharedPreferences.getString("myLat",""));
-        double [] longitude = subString(sharedPreferences.getString("myLong",""));
+
+        if(count > -1)
+        {
+            position[count] = x;
+        }
+        double [] latitude = subString(sharedPreferences.getString("A_Lat",""));
+        double [] longitude = subString(sharedPreferences.getString("A_Long",""));
         distance = new double[count_marker];
 
         addX = 300;
         currentLocation.setLatitude(getLat());
         currentLocation.setLongitude(getLon());
+        bearings = calBearings(currentLocation,getLat(),getLon(),sharedPreferences);
         for (int i = 0; i < count_marker; i++) {
             distance[i] = calDistance(currentLocation.getLatitude(), currentLocation.getLongitude(), latitude[i], longitude[i])*1000;
+            Log.d("ddd",""+bearings[i]);
         }
         if (isLocationBlock) {
             height = dw.getTextAsc() + dw.getTextDesc() + padh * 2 + 10;
@@ -221,17 +236,17 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
         if (bg) {
             if (isLocationBlock) {
                 if (distance[count] < 500) {
-                    if (mark_position == lp.position[count]) {
+                    if (mark_position == position[count]) {
                         addY = 200;
                     } else {
                         addY = 0;
                         if (distance[count] < 500) {
-                            mark_position = lp.position[count];
+                            mark_position = position[count];
                         }
                     }
                     //layoutParamses[count].setMargins((int) (x - width / 2 + lp.position[count]), (int) (y - height / 2 - 10 - addY), 0, 0);
                     layoutParamses[count].setMargins((int) (this.yaw + x), (int) (y - height / 2 - 10 - addY), 0, 0);
-                    layoutParamses[count].height = RelativeLayout.LayoutParams.WRAP_CONTENT;
+                    layoutParamses[count].height = 100;
                     layoutParamses[count].width = 300;
                     subjectTextViewParams[count].addRule(RelativeLayout.CENTER_IN_PARENT);
                     locationMarkerView[count].setLayoutParams(layoutParamses[count]);
@@ -261,8 +276,8 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
 
 
     void drawTextBlock(PaintUtils dw,int count,SharedPreferences sharedPreferences) {
-        String[] namePlace = subStringName(sharedPreferences.getString("name_place",""));
-        coordinateArray = new int[count][2];
+        String[] namePlace = subStringName(sharedPreferences.getString("A_placename",""));
+        //position = new float[count];
         for (int i = 0; i < count; i++) {
             if (bearings[i] == 0) {
                 if (this.pitch != 90) {
@@ -279,6 +294,7 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
                 radarText(dw,namePlace[i], nextXofText[i], yPosition, true, true, i,count,sharedPreferences);
                 coordinateArray[i][0] = nextXofText[i];
                 coordinateArray[i][1] = (int) yPosition;
+
             } else {
                 angleToShitf = (float) bearings[i] - this.yaw;
                 if (this.pitch != 90) {
@@ -292,8 +308,9 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
                     radarText(dw, namePlace[i], (nextXofText[i]), yPosition, true, true, i,count,sharedPreferences);
                     coordinateArray[i][0] = (int) ((displayMetrics.widthPixels / 2) + (angleToShitf * degreetopixelWidth));
                     coordinateArray[i][1] = (int) yPosition;
-                    //lp.position[i] = this.yaw + coordinateArray[i][0];
+                    position[i] = this.yaw + coordinateArray[i][0];
                     isDrawing = true;
+
                 } else {
                     radarText(dw, namePlace[i], coordinateArray[i][0], yPosition, true, true, i,count,sharedPreferences);
                     isDrawing = false;
@@ -337,7 +354,7 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
 
         locationMarkerView[v.getId()].setBackgroundResource(isClick ? R.drawable.shape_marker : R.drawable.shape_marker_click);
 
-        //Toast.makeText(_context,"สถานที่ : "+places[v.getId()]+"\n ระยะทาง : "+lp.distance[v.getId()]+" เมตร",Toast.LENGTH_SHORT).show();
+
         final Dialog dialog = new Dialog(_context);
         Window window = dialog.getWindow();
         window.setGravity(Gravity.BOTTOM);
@@ -361,17 +378,27 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
                 isClick = true;
             }
         });
+
+        Button btnExtra = (Button) dialog.findViewById(R.id.dtl_btn_extra);
+        btnExtra.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(_context, ShowExtraDetail.class);
+                _context.startActivity(intent);
+                finish();
+            }
+        });
         dialog.show();
     }
 
     public double[] calBearings(Location curent, double mMyLatitude, double mMyLongitude,SharedPreferences sharedPreferences) {
-        int count = Integer.parseInt(sharedPreferences.getString("result",""));
+        int count = sharedPreferences.getInt("count",0);
         curent.setLatitude(mMyLatitude);
         curent.setLongitude(mMyLongitude);
         Location distance = new Location("distance");
         bearings = new double[count];
-        double [] latitude = subString(sharedPreferences.getString("myLat",""));
-        double [] longitude = subString(sharedPreferences.getString("myLong",""));
+        double [] latitude = subString(sharedPreferences.getString("A_Lat",""));
+        double [] longitude = subString(sharedPreferences.getString("A_Long",""));
         if (bearing < 0) {
             bearing = 360 + bearing;
         }

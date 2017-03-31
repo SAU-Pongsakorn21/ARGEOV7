@@ -2,6 +2,7 @@
     <string name="app_name">ARGEOV7</string>
     <string name="detail_txt_title">ชื่อสถานที่</string>
     <string name="detail_txt_show">ระยะทาง</string>
+    <string name="detail_btn_extra">รายระเอียดเพิ่มเติม คลิกที่นี่...</string>
     <string name="add_txt_title1">ชื่อสถานที่</string>
     <string name="rgt_txt_username">Username</string>
     <string name="rgt_txt_password">Password</string>
@@ -18,4 +19,9 @@
     <string name="add_txt_username">ชื่อผู้ใช้ : </string>
     <string name="add_btn_add">Add Location</string>
     <string name="add_btn_cancel">Cancel</string>
+    <string name="main_txt_cameraview">Camera View</string>
+    <string name="main_txt_register">Register</string>
+    <string name="main_txt_title01">Welcome to Application</string>
+    <string name="main_txt_title02">Area Interested</string>
+    <string name="add_txt_upload">Upload Images</string>
 </resources>

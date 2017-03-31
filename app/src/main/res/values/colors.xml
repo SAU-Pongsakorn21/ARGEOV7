@@ -10,4 +10,7 @@
     <color name="colorDeepPurple">#673AB7</color>
     <color name="colorDeepPurple200">#B39DDB</color>
     <color name="colorGrey100">#F5F5F5</color>
+    <color name="colorTranslation">#00ffffff</color>
+    <color name="colorBG">#F50057</color>
+    <color name="colorTitleCardView">#4c4c4c</color>
 </resources>

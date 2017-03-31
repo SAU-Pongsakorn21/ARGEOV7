@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cardview_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        card_view:cardBackgroundColor="@color/colorIndigo100"
+        card_view:cardCornerRadius="6dp"
+        card_view:cardElevation="0dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/cardview_img_thumbnail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/view_margin_16dp"
+                android:adjustViewBounds="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_local_see_black_24dp" />
+
+            <TextView
+                android:id="@+id/cardview_txt_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/cardview_img_thumbnail"
+                android:layout_marginBottom="@dimen/cardview_padding"
+                android:gravity="center"
+                android:paddingLeft="@dimen/cardview_padding"
+                android:paddingRight="@dimen/cardview_padding"
+                android:text="what"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/cardview_sizetext" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>

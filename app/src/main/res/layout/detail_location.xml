@@ -33,6 +33,14 @@
             android:textColor="@color/colorBlack"
             android:textSize="@dimen/detail_text_size_18sp"
             android:textStyle="bold"/>
+        <Button
+            android:id="@+id/dtl_btn_extra"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorTranslation"
+            android:textColor="@color/colorIndigo100"
+            android:textStyle="bold"
+            android:text="@string/detail_btn_extra"/>
     </LinearLayout>
     <Button
         android:id="@+id/dtl_btn_close"
