@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.location.Location;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -90,6 +89,8 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
     public int c_count;
     double [] distance;
     public float[] position;
+    double[] latitude;
+    double[] longitude;
     public DataView(Context ctx) {
         this._context = ctx;
     }
@@ -101,10 +102,20 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
 
     public void init(int widthInit, int heightInit, android.hardware.Camera camera, DisplayMetrics displayMetrics, final RelativeLayout rel,SharedPreferences sharedPreferences ) {
 
-
-
         c_count = sharedPreferences.getInt("count",0);
         String[] idPlace = subStringName(sharedPreferences.getString("A_id_place",""));
+
+        if(idPlace.length != 1)
+        {
+            for(int i=0;i<idPlace.length;i++)
+            {
+                if((i+1)<Integer.parseInt(idPlace[i]))
+                {
+                    idPlace[i] = String.valueOf(i+1);
+                }
+            }
+        }
+
         namePlace = subStringName(sharedPreferences.getString("A_placename",""));
         locationMarkerView = new RelativeLayout[c_count];
         layoutParamses = new RelativeLayout.LayoutParams[c_count];
@@ -147,7 +158,8 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
             locationMarkerView[i].addView(locationTextView[i],subjectTextViewParams[i]);
 
             rel.addView(locationMarkerView[i]);
-            locationMarkerView[i].setId(Integer.parseInt(idPlace[i])-1);
+            locationMarkerView[i].setId(Integer.parseInt(idPlace[i].replace("\"","")));
+
             locationMarkerView[i].setOnClickListener(this);
 
         }
@@ -216,8 +228,17 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
         {
             position[count] = x;
         }
-        double [] latitude = subString(sharedPreferences.getString("A_Lat",""));
-        double [] longitude = subString(sharedPreferences.getString("A_Long",""));
+
+        if(sharedPreferences.getString("A_Lat","").equals("[]"))
+        {
+            latitude = new double[] {0.0};
+            longitude = new double[] {0.0};
+        }
+        else
+        {
+            latitude = subString(sharedPreferences.getString("A_Lat",""));
+            longitude = subString(sharedPreferences.getString("A_Long",""));
+        }
         distance = new double[count_marker];
 
         addX = 300;
@@ -226,7 +247,6 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
         bearings = calBearings(currentLocation,getLat(),getLon(),sharedPreferences);
         for (int i = 0; i < count_marker; i++) {
             distance[i] = calDistance(currentLocation.getLatitude(), currentLocation.getLongitude(), latitude[i], longitude[i])*1000;
-            Log.d("ddd",""+bearings[i]);
         }
         if (isLocationBlock) {
             height = dw.getTextAsc() + dw.getTextDesc() + padh * 2 + 10;
@@ -237,15 +257,15 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
             if (isLocationBlock) {
                 if (distance[count] < 500) {
                     if (mark_position == position[count]) {
-                        addY = 200;
+                        addY = 100;
                     } else {
-                        addY = 0;
+                        addY = 100;
                         if (distance[count] < 500) {
                             mark_position = position[count];
                         }
                     }
                     //layoutParamses[count].setMargins((int) (x - width / 2 + lp.position[count]), (int) (y - height / 2 - 10 - addY), 0, 0);
-                    layoutParamses[count].setMargins((int) (this.yaw + x), (int) (y - height / 2 - 10 - addY), 0, 0);
+                    layoutParamses[count].setMargins((int) (this.yaw + x), (int) (y + 125 - height / 2 - 10 - (count*0.5*addY)), 0, 0);
                     layoutParamses[count].height = 100;
                     layoutParamses[count].width = 300;
                     subjectTextViewParams[count].addRule(RelativeLayout.CENTER_IN_PARENT);
@@ -352,7 +372,7 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
     public void onClick(View v) {
         isClick = !isClick;
 
-        locationMarkerView[v.getId()].setBackgroundResource(isClick ? R.drawable.shape_marker : R.drawable.shape_marker_click);
+        locationMarkerView[v.getId()-1].setBackgroundResource(isClick ? R.drawable.shape_marker : R.drawable.shape_marker_click);
 
 
         final Dialog dialog = new Dialog(_context);
@@ -364,12 +384,12 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
         dialog.setContentView(R.layout.detail_location);
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         TextView txt_title = (TextView) dialog.findViewById(R.id.dtl_txt_title);
-        txt_title.setText(namePlace[v.getId()]);
+        txt_title.setText(namePlace[v.getId()-1]);
         TextView txt_detail = (TextView) dialog.findViewById(R.id.dtl_txt_show);
-        txt_detail.setText("ระยะทาง : " + distance[v.getId()]);
+        txt_detail.setText("ระยะทาง : " + distance[v.getId()-1]);
         Button btnClose = (Button) dialog.findViewById(R.id.dtl_btn_close);
         dialog.setCancelable(false);
-        keepView = v.getId();
+        keepView = v.getId()-1;
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -397,8 +417,18 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
         curent.setLongitude(mMyLongitude);
         Location distance = new Location("distance");
         bearings = new double[count];
-        double [] latitude = subString(sharedPreferences.getString("A_Lat",""));
-        double [] longitude = subString(sharedPreferences.getString("A_Long",""));
+
+        if(sharedPreferences.getString("A_Lat","").equals("[]"))
+        {
+            latitude = new double[] {0.0};
+            longitude = new double[] {0.0};
+        }
+        else
+        {
+            latitude = subString(sharedPreferences.getString("A_Lat",""));
+            longitude = subString(sharedPreferences.getString("A_Long",""));
+        }
+
         if (bearing < 0) {
             bearing = 360 + bearing;
         }
@@ -414,48 +444,77 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
         return bearings;
     }
 
-    public double[] subString(String value)
-    {
-        String [] text = value.split(",");
-        double [] result = new double[text.length];
-        for(int x=0;x<text.length;x++)
+    public double[] subString(String value) {
+
+        double [] result;
+
+        if(!value.contains(","))
         {
-            if(text[x].contains("["))
+            String convert = "";
+            if(value.contains("["))
             {
-                text[x] = text[x].replace("[","");
-            }
-            else if(text[x].contains("]"))
-            {
-                text[x] = text[x].replace("]","");
+                convert = value.replace("[","");
             }
 
-            if(text[x].contains("\""))
+            if(value.contains("]"))
             {
-                text[x] = text[x].replace("\"","");
+                convert = value.replace("]","");
             }
-            result[x] = Double.parseDouble(text[x]);
+            result = new double[]{Double.parseDouble(convert.replace("[",""))};
+        }
+        else
+        {
+            String [] text = value.split(",");
+            result = new double[text.length];
+            for(int x=0;x<text.length;x++)
+            {
+                if(text[x].contains("["))
+                {
+                    text[x] = text[x].replace("[","");
+                }
+                else if(text[x].contains("]"))
+                {
+                    text[x] = text[x].replace("]","");
+                }
+
+                if(text[x].contains("\""))
+                {
+                    text[x] = text[x].replace("\"","");
+                }
+                result[x] = Double.parseDouble(text[x]);
+            }
         }
         return result;
     }
 
-    public String[] subStringName(String value)
+    public String[] subStringName (String value)
     {
         String[] text = value.split(",");
 
-        for(int x=0;x<text.length;x++)
+        if(!value.contains(","))
         {
-            if(text[x].contains("[\""))
+            value = value.replace("[","");
+            value = value.replace("]","");
+            text[0] = value;
+            return text;
+        }
+        else
+        {
+            for(int x=0;x<text.length;x++)
             {
-                text[x] = text[x].replace("[\"","");
-            }
-            else if(text[x].contains("\"]"))
-            {
-                text[x] = text[x].replace("\"]","");
-            }
+                if(text[x].contains("[\""))
+                {
+                    text[x] = text[x].replace("[\"","");
+                }
+                else if(text[x].contains("\"]"))
+                {
+                    text[x] = text[x].replace("\"]","");
+                }
 
-            if(text[x].contains("\""))
-            {
-                text[x] = text[x].replace("\"","");
+                if(text[x].contains("\""))
+                {
+                    text[x] = text[x].replace("\"","");
+                }
             }
         }
         return text;

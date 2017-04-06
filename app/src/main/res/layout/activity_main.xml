@@ -51,19 +51,11 @@
                         android:text="@string/main_txt_title01"
                         android:textColor="@android:color/white"
                         android:textSize="@dimen/detail_backdrop_text" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/main_txt_title02"
-                        android:textColor="@android:color/white"
-                        android:textSize="@dimen/detail_backdrop_subtext" />
-
                 </LinearLayout>
             </RelativeLayout>
 
             <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
+                android:id="@+id/toolbar_main"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"

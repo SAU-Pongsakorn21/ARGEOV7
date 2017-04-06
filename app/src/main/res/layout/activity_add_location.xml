@@ -12,7 +12,7 @@
         android:background="@color/colorPrimary">
 
         <RelativeLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
             <ImageView
@@ -62,7 +62,9 @@
                 android:id="@+id/add_edt_place_detail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:inputType="textMultiLine"
+                android:maxLines="4"
+                android:lines="4"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -126,39 +128,40 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1.40" />
             </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:layout_width="@dimen/zero_dimen"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/add_txt_upload" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+            <RelativeLayout
                 android:layout_marginTop="@dimen/view_margin_16dp"
-                android:orientation="horizontal"
-                android:weightSum="2">
-
-                <Button
-
-                    android:layout_width="@dimen/zero_dimen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/img_gallery"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/add_btn_add" />
-
-                <Button
-                    android:id="@+id/add_btn_cancel"
-                    android:layout_width="@dimen/zero_dimen"
+                    android:src="@drawable/gallery"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"/>
+                <ImageView
+                    android:id="@+id/img_camera"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@id/img_gallery"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/add_btn_cancel" />
+                    android:src="@drawable/camera"/>
+                <ImageView
+                    android:id="@+id/img_upload"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentTop="true"
+                    android:src="@drawable/upload" />
+            </RelativeLayout>
+            <LinearLayout
+                android:id="@+id/add_lnl_showImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

@@ -13,4 +13,5 @@
     <color name="colorTranslation">#00ffffff</color>
     <color name="colorBG">#F50057</color>
     <color name="colorTitleCardView">#4c4c4c</color>
+    <color name="colorBlue100">#BBDEFB</color>
 </resources>

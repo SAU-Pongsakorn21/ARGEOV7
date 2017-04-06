@@ -1,13 +1,19 @@
 package sau.comsci.com.argeov7;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,35 +22,66 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.kosalgeek.android.photoutil.GalleryPhoto;
+import com.kosalgeek.android.photoutil.ImageBase64;
+import com.kosalgeek.android.photoutil.PhotoLoader;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import sau.comsci.com.argeov7.utils.Constants;
+import sau.comsci.com.argeov7.utils.MyCommand;
 import sau.comsci.com.argeov7.utils.RequestHandler;
 
 public class AddLocationActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText edt_place_name, edt_place_detail;
     private TextView txt_latitude, txt_longitude, txt_username;
-    private Button btn_add_location, btn_cancel;
     private ProgressDialog progressDialog;
 
-    boolean checkimage = true;
     public double place_latitude;
     public double place_longitude;
-    ImageView imgAdd;
+    ImageView imgAdd,iv_gallery,iv_uploade;
+    GalleryPhoto galleryPhoto;
+    LinearLayout linerMain;
+
+    final int GALLERY_REQUEST = 1200;
+
+    ArrayList<String> imageList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_location);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_addLocation);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        galleryPhoto = new GalleryPhoto(getApplicationContext());
+        linerMain = (LinearLayout) findViewById(R.id.add_lnl_showImage);
+
+
         Bundle bundle = getIntent().getExtras();
         place_latitude= bundle.getDouble("Latitude");
         place_longitude = bundle.getDouble("Longitude");
         Log.d("lat",String.valueOf(place_latitude));
+
+        init();
+
+        imgAdd.setOnClickListener(this);
+        iv_gallery.setOnClickListener(this);
+        iv_uploade.setOnClickListener(this);
+
+    }
+
+    public void init()
+    {
         edt_place_detail = (EditText) findViewById(R.id.add_edt_place_detail);
         edt_place_name = (EditText) findViewById(R.id.add_edt_place_name);
 
@@ -52,18 +89,15 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
         txt_longitude = (TextView) findViewById(R.id.add_txt_longitude);
         txt_username = (TextView) findViewById(R.id.add_txt_username);
 
-        //btn_add_location = (Button) findViewById(R.id.add_btn_add);
         imgAdd = (ImageView) findViewById(R.id.add_btn_add);
-        btn_cancel = (Button) findViewById(R.id.add_btn_cancel);
+        iv_gallery = (ImageView) findViewById(R.id.img_gallery);
+        iv_uploade = (ImageView) findViewById(R.id.img_upload);
+
+
         txt_username.setText("admin");
         txt_latitude.setText(String.valueOf(place_latitude));
         txt_longitude.setText(String.valueOf(place_longitude));
         progressDialog = new ProgressDialog(this);
-
-        //btn_add_location.setOnClickListener(this);
-        btn_cancel.setOnClickListener(this);
-        imgAdd.setOnClickListener(this);
-
     }
 
     private void addLocation() {
@@ -111,8 +145,6 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
         };
 
         RequestHandler.getInstance(this).addToRequestQueue(stringRequest);
-        //imgAdd.setBackgroundResource(R.drawable.add);
-        checkimage = true;
     }
 
     @Override
@@ -120,10 +152,105 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
     {
         if(view == imgAdd)
         {
-            checkimage = false;
-            imgAdd.setBackgroundResource(R.drawable.add_click);
-
             addLocation();
+        }
+        else if(view == iv_gallery)
+        {
+            Intent intent = galleryPhoto.openGalleryIntent();
+            startActivityForResult(intent,GALLERY_REQUEST);
+        }
+        else if(view == iv_uploade)
+        {
+            final MyCommand myCommand = new MyCommand(getApplicationContext());
+            Log.d("imagePath",""+imageList.size());
+            for(String imagePath : imageList)
+            {
+                try {
+                    Bitmap bitmap = PhotoLoader.init().from(imagePath).requestSize(512,512).getBitmap();
+                    final String encodedString = ImageBase64.encode(bitmap);
+                    String url = "http://192.168.1.37:81/uploadVolley/upload.php";
+                    StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            Toast.makeText(getApplicationContext(),response,Toast.LENGTH_SHORT).show();
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(getApplicationContext(),"Error while upload image",Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    {
+                        @Override
+                        protected Map<String,String> getParams() throws AuthFailureError{
+                            Map<String,String> params= new HashMap<>();
+                            params.put("image",encodedString);
+                            Log.d("params",""+params);
+                            return params;
+                        }
+                    };
+
+                    myCommand.add(stringRequest);
+
+                } catch (FileNotFoundException e) {
+                    Toast.makeText(getApplicationContext(),"Error while loading image",Toast.LENGTH_SHORT).show();
+                }
+            }
+            linerMain.removeAllViews();
+            imageList.clear();
+            myCommand.execute();
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == RESULT_OK)
+        {
+            if(requestCode == GALLERY_REQUEST)
+            {
+                galleryPhoto.setPhotoUri(data.getData());
+                final String photoPath =galleryPhoto.getPath();
+                imageList.add(photoPath);
+
+                try {
+                    final Bitmap bitmap = PhotoLoader.init().from(photoPath).requestSize(512,512).getBitmap();
+
+                    final ImageView imageView = new ImageView(getApplicationContext());
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
+                    imageView.setLayoutParams(layoutParams);
+
+                    imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    imageView.setPadding(0,0,0,10);
+                    imageView.setAdjustViewBounds(true);
+                    imageView.setImageBitmap(bitmap);
+
+                    linerMain.addView(imageView);
+
+                    imageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            imageList.remove(photoPath);
+                            linerMain.removeView(imageView);
+                        }
+                    });
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+            }
         }
     }
 }

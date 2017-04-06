@@ -1,6 +1,7 @@
 package sau.comsci.com.argeov7;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -30,6 +32,7 @@ public class Register_Activity extends AppCompatActivity implements View.OnClick
     private EditText edt_username, edt_password, edt_email;
     private Button btn_register;
     private ProgressDialog progressDialog;
+    private TextView textLogin;
     Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,12 +42,13 @@ public class Register_Activity extends AppCompatActivity implements View.OnClick
         edt_username = (EditText) findViewById(R.id.rgt_edt_username);
         edt_password = (EditText) findViewById(R.id.rgt_edt_password);
         edt_email = (EditText) findViewById(R.id.rgt_edt_email);
-
+        textLogin = (TextView) findViewById(R.id.rgt_txt_login);
         btn_register = (Button) findViewById(R.id.rgt_btn_register);
 
         progressDialog = new ProgressDialog(this);
 
         btn_register.setOnClickListener(this);
+        textLogin.setOnClickListener(this);
 
 
         toolbar = (Toolbar) findViewById(R.id.register_toolbar);
@@ -97,6 +101,10 @@ public class Register_Activity extends AppCompatActivity implements View.OnClick
     public void onClick(View view) {
         if (view == btn_register) {
             registerUser();
+        }
+        else if(view == textLogin)
+        {
+            startActivity(new Intent(this,LoginActivity.class));
         }
     }
 

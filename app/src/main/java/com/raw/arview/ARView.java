@@ -1,6 +1,7 @@
 package com.raw.arview;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
@@ -11,8 +12,10 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.util.DisplayMetrics;
@@ -27,6 +30,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.raw.utils.Compatibility;
@@ -134,6 +138,41 @@ public class ARView extends AppCompatActivity implements OnLocationChangedListen
         }
         btnAdd.setOnClickListener(this);
 
+
+        checkGPS();
+    }
+
+    public void checkGPS()
+    {
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            Toast.makeText(this, "GPS is Enabled in your devide", Toast.LENGTH_SHORT).show();
+        }else{
+            showGPSDisabledAlertToUser();
+        }
+    }
+
+    private void showGPSDisabledAlertToUser(){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage("GPS is disabled in your device. Would you like to enable it?")
+                .setCancelable(false)
+                .setPositiveButton("Goto Settings Page To Enable GPS",
+                        new DialogInterface.OnClickListener(){
+                            public void onClick(DialogInterface dialog, int id){
+                                Intent callGPSSettingIntent = new Intent(
+                                        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(callGPSSettingIntent);
+                            }
+                        });
+        alertDialogBuilder.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener(){
+                    public void onClick(DialogInterface dialog, int id){
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
     }
 
     public void setCheck_location(Double check)
@@ -150,21 +189,45 @@ public class ARView extends AppCompatActivity implements OnLocationChangedListen
     {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        count = Integer.parseInt(String.valueOf(bundle.get("result")));
-        A_Lat = String.valueOf(bundle.get("myLat"));
-        A_Long = String.valueOf(bundle.get("myLong"));
-        A_placename = String.valueOf(bundle.get("name_place"));
-        A_id_place = String.valueOf(bundle.get("id_place"));
+        if(bundle.get("result").equals(""))
+        {
+            count = 0;
+            A_Lat = "0";
+            A_Long = "0";
+            A_placename = "No name";
+            A_id_place = "0";
 
 
-        sharedPreferences = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("count",count);
-        editor.putString("A_Lat",A_Lat);
-        editor.putString("A_Long",A_Long);
-        editor.putString("A_placename",A_placename);
-        editor.putString("A_id_place",A_id_place);
-        editor.commit();
+            sharedPreferences = getPreferences(MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt("count",count);
+            editor.putString("A_Lat",A_Lat);
+            editor.putString("A_Long",A_Long);
+            editor.putString("A_placename",A_placename);
+            editor.putString("A_id_place",A_id_place);
+            editor.commit();
+        }
+        else
+        {
+            count = Integer.parseInt(String.valueOf(bundle.get("result")));
+            A_Lat = String.valueOf(bundle.get("myLat"));
+            A_Long = String.valueOf(bundle.get("myLong"));
+            A_placename = String.valueOf(bundle.get("name_place"));
+            A_id_place = String.valueOf(bundle.get("id_place"));
+
+
+            sharedPreferences = getPreferences(MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt("count",count);
+            editor.putString("A_Lat",A_Lat);
+            editor.putString("A_Long",A_Long);
+            editor.putString("A_placename",A_placename);
+            editor.putString("A_id_place",A_id_place);
+            editor.commit();
+
+
+        }
+
     }
     public static Context getContext() {
         return _context;
@@ -224,6 +287,8 @@ public class ARView extends AppCompatActivity implements OnLocationChangedListen
     @Override
     public void onDestroy() {
         super.onDestroy();
+        this.sharedPreferences.edit().clear().apply();
+        radarMarkerView.R_sharedPreferences.edit().clear().apply();
 
     }
 
@@ -343,7 +408,15 @@ class CameraView extends SurfaceView implements SurfaceHolder.Callback {
                 }
                 camera = null;
             }
+
             camera = Camera.open();
+            Camera.Parameters parameters = camera.getParameters();
+            List<String> focusModes = parameters.getSupportedFocusModes();
+            if(focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO))
+            {
+                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+            }
+            camera.setParameters(parameters);
             arView.camera = camera;
             camera.setPreviewDisplay(holder);
         } catch (Exception ex) {
@@ -448,6 +521,7 @@ class RadarMarkerView extends View {
             ARView.dataView.draw(ARView.paintScreen, ARView.azimuth, ARView.pitch, ARView.roll,count,R_sharedPreferences);
         }
     }
+
 }
 
 @SuppressWarnings("deprecation")

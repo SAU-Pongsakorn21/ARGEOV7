@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ARGEOV7</string>
+    <string name="app_name">Area of Interested</string>
     <string name="detail_txt_title">ชื่อสถานที่</string>
     <string name="detail_txt_show">ระยะทาง</string>
     <string name="detail_btn_extra">รายระเอียดเพิ่มเติม คลิกที่นี่...</string>
@@ -21,7 +21,8 @@
     <string name="add_btn_cancel">Cancel</string>
     <string name="main_txt_cameraview">Camera View</string>
     <string name="main_txt_register">Register</string>
-    <string name="main_txt_title01">Welcome to Application</string>
+    <string name="main_txt_title01">Welcome to Aoi</string>
     <string name="main_txt_title02">Area Interested</string>
     <string name="add_txt_upload">Upload Images</string>
+    <string name="login">Login</string>
 </resources>

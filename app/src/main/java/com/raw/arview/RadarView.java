@@ -35,7 +35,8 @@ public class RadarView {
 
     float yaw = 0;
     double[] bearings;
-
+    double[] latitude;
+    double[] longitude;
 
     ARView arView = new ARView();
 
@@ -55,8 +56,17 @@ public class RadarView {
     public void paint(PaintUtils dw, float yaw, SharedPreferences sharedPreferences) {
         this.yaw = yaw;
         int count = sharedPreferences.getInt("count",0);
-        double[] latitude = view.subString(sharedPreferences.getString("A_Lat",""));
-        double[] longitude = view.subString(sharedPreferences.getString("A_Long",""));
+
+        if(count == 0)
+        {
+            latitude = new double[] {0.0};
+            longitude = new double[] {0.0};
+        }
+        else
+        {
+             latitude= view.subString(sharedPreferences.getString("A_Lat",""));
+             longitude = view.subString(sharedPreferences.getString("A_Long",""));
+        }
         dw.setFill(true);
         dw.setColor(radarColor);
         dw.paintCircle(origenX + RADIUS, origentY + RADIUS, RADIUS);
@@ -76,7 +86,6 @@ public class RadarView {
                 dw.paintRect(x + RADIUS, y + RADIUS, 2, 2);
             }
         }
-
     }
 
     public float getWidth() // ความกว้างบนหน้าจอโทรศัพท์

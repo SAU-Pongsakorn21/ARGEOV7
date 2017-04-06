@@ -136,4 +136,5 @@ public class PaintUtils
         typeface2 = Typeface.create(Typeface.DEFAULT, typeface);
         paint.setTypeface(typeface2);
     }
+
 }

@@ -16,4 +16,5 @@
     <dimen name="detail_backdrop_height">250dp</dimen>
     <dimen name="detail_backdrop_text">30sp</dimen>
     <dimen name="detail_backdrop_subtext">22sp</dimen>
+    <dimen name="margin8">8dp</dimen>
 </resources>
