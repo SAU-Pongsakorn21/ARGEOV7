@@ -91,6 +91,10 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
     public float[] position;
     double[] latitude;
     double[] longitude;
+
+    String value1;
+    double value2;
+
     public DataView(Context ctx) {
         this._context = ctx;
     }
@@ -138,7 +142,7 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
             locationTextView[i].setText(checkTextToDisplay(namePlace[i]));
             locationTextView[i].setTextColor(Color.WHITE);
             locationTextView[i].setSingleLine();
-            subjectImageView[i].setBackgroundResource(R.drawable.icon);
+            subjectImageView[i].setBackgroundResource(R.drawable.place48white);
 
             subjectImageView[i].setId(R.id.ImageViewID);
             locationTextView[i].setId(R.id.TextViewID);
@@ -371,7 +375,8 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
     @Override
     public void onClick(View v) {
         isClick = !isClick;
-
+        value1 = namePlace[v.getId()-1];
+        value2 = distance[v.getId()-1];
         locationMarkerView[v.getId()-1].setBackgroundResource(isClick ? R.drawable.shape_marker : R.drawable.shape_marker_click);
 
 
@@ -403,7 +408,10 @@ public class DataView extends AppCompatActivity implements View.OnClickListener 
         btnExtra.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent intent = new Intent(_context, ShowExtraDetail.class);
+                intent.putExtra("name_place",value1);
+                intent.putExtra("distance",value2);
                 _context.startActivity(intent);
                 finish();
             }

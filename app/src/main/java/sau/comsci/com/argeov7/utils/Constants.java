@@ -8,5 +8,6 @@ public class Constants {
     public static final String URL_REGISTER = URL_ROOT+"registerUser.php";
     public static final String URL_ADD_LOCATION = URL_ROOT+"addLocation.php";
     public static final String URL_LOAD_LOCATION = URL_ROOT+"getPlace.php";
-    public static final String URL_LOAD_COUNT = URL_ROOT+"getCount.php";
+    public static final String URL_UPLOAD_IMAGE = URL_ROOT+"uploadImage.php";
+    public static final String URL_LOGIN = URL_ROOT+"userLogin.php";
 }

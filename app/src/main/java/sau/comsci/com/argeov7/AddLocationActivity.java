@@ -38,6 +38,8 @@ import sau.comsci.com.argeov7.utils.Constants;
 import sau.comsci.com.argeov7.utils.MyCommand;
 import sau.comsci.com.argeov7.utils.RequestHandler;
 
+import static sau.comsci.com.argeov7.utils.Constants.URL_UPLOAD_IMAGE;
+
 public class AddLocationActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText edt_place_name, edt_place_detail;
     private TextView txt_latitude, txt_longitude, txt_username;
@@ -48,6 +50,8 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
     ImageView imgAdd,iv_gallery,iv_uploade;
     GalleryPhoto galleryPhoto;
     LinearLayout linerMain;
+    int place_id;
+    String s_place_id[];
 
     final int GALLERY_REQUEST = 1200;
 
@@ -70,6 +74,8 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
         Bundle bundle = getIntent().getExtras();
         place_latitude= bundle.getDouble("Latitude");
         place_longitude = bundle.getDouble("Longitude");
+        s_place_id = bundle.getString("place_id").split(",");
+        place_id = s_place_id.length;
         Log.d("lat",String.valueOf(place_latitude));
 
         init();
@@ -94,7 +100,7 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
         iv_uploade = (ImageView) findViewById(R.id.img_upload);
 
 
-        txt_username.setText("admin");
+        txt_username.setText(SharedPrefManager.getInstance(this).getUsername());
         txt_latitude.setText(String.valueOf(place_latitude));
         txt_longitude.setText(String.valueOf(place_longitude));
         progressDialog = new ProgressDialog(this);
@@ -139,7 +145,7 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
                 params.put("place_detail",place_detail);
                 params.put("place_latitude",String.valueOf(place_latitude));
                 params.put("place_longitude",String.valueOf(place_longitude));
-                params.put("user_username","admin");
+                params.put("user_username",SharedPrefManager.getInstance(getApplicationContext()).getUsername());
                 return params;
             }
         };
@@ -153,52 +159,12 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
         if(view == imgAdd)
         {
             addLocation();
+            uploadImage();
         }
         else if(view == iv_gallery)
         {
             Intent intent = galleryPhoto.openGalleryIntent();
             startActivityForResult(intent,GALLERY_REQUEST);
-        }
-        else if(view == iv_uploade)
-        {
-            final MyCommand myCommand = new MyCommand(getApplicationContext());
-            Log.d("imagePath",""+imageList.size());
-            for(String imagePath : imageList)
-            {
-                try {
-                    Bitmap bitmap = PhotoLoader.init().from(imagePath).requestSize(512,512).getBitmap();
-                    final String encodedString = ImageBase64.encode(bitmap);
-                    String url = "http://192.168.1.37:81/uploadVolley/upload.php";
-                    StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            Toast.makeText(getApplicationContext(),response,Toast.LENGTH_SHORT).show();
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(getApplicationContext(),"Error while upload image",Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    {
-                        @Override
-                        protected Map<String,String> getParams() throws AuthFailureError{
-                            Map<String,String> params= new HashMap<>();
-                            params.put("image",encodedString);
-                            Log.d("params",""+params);
-                            return params;
-                        }
-                    };
-
-                    myCommand.add(stringRequest);
-
-                } catch (FileNotFoundException e) {
-                    Toast.makeText(getApplicationContext(),"Error while loading image",Toast.LENGTH_SHORT).show();
-                }
-            }
-            linerMain.removeAllViews();
-            imageList.clear();
-            myCommand.execute();
         }
     }
 
@@ -252,5 +218,48 @@ public class AddLocationActivity extends AppCompatActivity implements View.OnCli
 
             }
         }
+    }
+
+    public void uploadImage()
+    {
+        final MyCommand myCommand = new MyCommand(getApplicationContext());
+        Log.d("imagePath",""+imageList.size());
+        for(String imagePath : imageList)
+        {
+            try {
+                Bitmap bitmap = PhotoLoader.init().from(imagePath).requestSize(512,512).getBitmap();
+                final String encodedString = ImageBase64.encode(bitmap);
+                StringRequest stringRequest = new StringRequest(Request.Method.POST,URL_UPLOAD_IMAGE, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Toast.makeText(getApplicationContext(),response,Toast.LENGTH_SHORT).show();
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getApplicationContext(),"Error while upload image",Toast.LENGTH_SHORT).show();
+                    }
+                })
+                {
+                    @Override
+                    protected Map<String,String> getParams() throws AuthFailureError{
+                        Map<String,String> params= new HashMap<>();
+                        params.put("image",encodedString);
+                        params.put("place_id",String.valueOf(place_id));
+                        Log.d("params",""+params);
+
+                        return params;
+                    }
+                };
+
+                myCommand.add(stringRequest);
+
+            } catch (FileNotFoundException e) {
+                Toast.makeText(getApplicationContext(),"Error while loading image",Toast.LENGTH_SHORT).show();
+            }
+        }
+        linerMain.removeAllViews();
+        imageList.clear();
+        myCommand.execute();
     }
 }

@@ -365,6 +365,7 @@ public class ARView extends AppCompatActivity implements OnLocationChangedListen
                     Intent intent = new Intent(ARView.this, AddLocationActivity.class);
                     intent.putExtra("Latitude", mMyLatitude);
                     intent.putExtra("Longitude", mMyLongitude);
+                    intent.putExtra("place_id",A_id_place);
                     startActivity(intent);
                 } else if (item.getItemId() == R.id.menu_register) {
                     Intent intent = new Intent(ARView.this, Register_Activity.class);
